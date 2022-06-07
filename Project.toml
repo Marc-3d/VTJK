@@ -1,0 +1,7 @@
+name = "VTJK"
+uuid = "d6c1b281-a739-46a0-9f79-102cd34437c5"
+authors = ["Marc "]
+version = "0.1.0"
+
+[deps]
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
