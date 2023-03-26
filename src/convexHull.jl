@@ -34,8 +34,8 @@ end
 
 function convexHull2VTK( points::Array{NTuple{3,T},1}, 
                          simplices::Array{NTuple{3,T2},1},
-						 normals::Array{NTuple{3,Float32},1};
-                         fn="tmp.vtk", path=pwd(), mode="w" ) where {T<:Real,T2<:Integer}
+						 normals::Array{NTuple{3,T3},1};
+                         fn="tmp.vtk", path=pwd(), mode="w" ) where {T<:Real,T2<:Integer,T3<:AbstractFloat}
 
 
     data_type = get( Julia2VTK, Float32, "" );

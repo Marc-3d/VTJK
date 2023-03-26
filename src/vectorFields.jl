@@ -60,16 +60,28 @@ function vectorfield2VTK( U::Array{T,3}, V::Array{T,3}, W::Array{T,3};
     silent || println( "VTK volume saved.")
 end
 
+function VTKVectorfieldSize( file )
+	io = Base.open( file, "r" )
+	l1 = Base.readline( io ); # 1st line: # vtk DataFile Version 2.0
+	l2 = Base.readline( io ); # 2nd line: VTJK volume
+	l3 = Base.readline( io ); # 3rd line: ASCII
+	l4 = Base.readline( io ); # 4rt line: DATASET STRUCTURED_POINTS
+	l5 = Base.readline( io ); # 5th line: Dimensions $h, $w, $d
+	h, w, d = parse.( Int64, split(l5," ")[2:4] )
+	Base.close(io); 
+	return h, w, d
+end
+
 
 function VTK2vectorfield(; fn="tmp.vkt", path=pwd(), silent=true )
 	
-	fn = parseFilename( fn, path, ".vtk" )
+	fn = parseFilename( fn, path, ".vtk" ); 
 	isfile(fn) || error("$fn can not be found")
 
 	lines = readlines(fn);
-	( lines[2][1:4] !== "VTJK" ) && (error("The vtk vector field was not stored with VTJK, and cannot open it" ))
+	( lines[2][1:4] !== "VTJK" ) && (error("The vtk vector field was not stored with VTJK, and cannot open it safely." ))
 
-	h, w, d = parse.( Int64, split(lines[5]," ")[2:4] )
+	h, w, d = VTKVectorfieldSize( fn ); 
 
 	_, _, dtype = split( lines[9], " " );
 	data_type = get( VTK2Julia, dtype, Bool );
