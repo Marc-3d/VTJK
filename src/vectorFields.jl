@@ -29,13 +29,17 @@ function vectorfield2VTK( U::Array{T,2}, V::Array{T,2};
 end
 
 function vectorfield2VTK( U::Array{T,3}, V::Array{T,3}, W::Array{T,3}; 
-                          fn="tmp.vkt", path=pwd(), mode="w", silent=true ) where {T<:Real}
+                          fn="tmp.vkt", path=pwd(), mode="w",
+                          spacing=(1,1,1), origin=(0,0,0),						  
+						  silent=true ) where {T<:Real}
 
     data_type = get( Julia2VTK, T, "" );
     ( data_type == "" ) && ( error("Unrecognized data type") );
 
-    save_path = parseFilename( fn, path, ".vtk" );
-	h, w, d   = size( U ); 
+    save_path  = parseFilename( fn, path, ".vtk" );
+	h , w , d  = size( U ); 
+	s1, s2, s3 = spacing; 
+	o1, o2, o3 = origin;
 
     io = open( save_path, mode )
 		println( io, "# vtk DataFile Version 2.0"  );
@@ -43,8 +47,8 @@ function vectorfield2VTK( U::Array{T,3}, V::Array{T,3}, W::Array{T,3};
 		println( io, "ASCII"  );
 		println( io, "DATASET STRUCTURED_POINTS"  );
 		println( io, "DIMENSIONS $h $w $d"  );
-		println( io, "ORIGIN 0 0 0"  );
-		println( io, "SPACING 1 1 1"  );
+		println( io, "ORIGIN $(o1) $(o2) $(o3)"  );
+		println( io, "SPACING $(s1) $(s2) $(s3)"  );
         println( io, "POINT_DATA $(length(U))"  )
         println( io, "VECTORS directions $data_type"  )
 
