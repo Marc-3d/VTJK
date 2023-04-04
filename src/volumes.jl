@@ -4,13 +4,17 @@ convert( typ::Type{<:AbstractFloat}, num::Integer       ) = typ(num)
 convert( typ::Type{<:Integer      }, num::Integer       ) = typ(num)
 
 function volume2VTK( volume::Array{T,3};
-                     fn="tmp.vkt", path=pwd(), mode="w", typ=eltype(volume), silent=true ) where {T<:Real}
+                     fn="tmp.vkt", path=pwd(), 
+					 spacing=(1,1,1), origin=(0,0,0), 
+					 mode="w", typ=eltype(volume), silent=true ) where {T<:Real}
 
     data_type = get( Julia2VTK, typ, "" );
     ( data_type == "" ) && ( error("Unrecognized data type") );
 
     save_path = parseFilename( fn, path, ".vtk" );
 	h, w, d   = size( volume );
+	s1,s2,s3  = spacing
+	o1,o2,o3  = origin
 
 	# using a buffer to try to get better performance while writting big matrices
 	header = """# vtk DataFile Version 2.0
@@ -18,8 +22,8 @@ function volume2VTK( volume::Array{T,3};
 	BINARY
 	DATASET STRUCTURED_POINTS
 	DIMENSIONS $h $w $d 
-	ORIGIN 0 0 0
-	SPACING 1 1 1
+	ORIGIN $(o1) $(o2) $(o3)
+	SPACING $(s1) $(s2) $(s3)
 	POINT_DATA $(length(volume))
 	SCALARS intensities $data_type
 	LOOKUP_TABLE default"""
