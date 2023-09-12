@@ -199,3 +199,45 @@ function volume2VTK_swap( volume::Array{Bool,3};
 
 	println( "VTK volume saved.")
 end
+
+
+function VTK2volume( ; fn="tmp.vtk", path=pwd()*"\\" )
+
+	fn = parseFilename( fn, path, ".vtk" ); 
+	isfile(fn) || error("$fn can not be found")
+
+	# IOStream
+	f = open( fn )
+
+	# Parsing the first 9 lines, which correspond to the header and the attributes title
+	header = [ Vector{UInt8}(undef,0) for n in 1:10 ]
+	line   = 1 
+	while true
+		b = read( f, 1 )
+		if ( b[1] == UInt8(10) )
+			line += 1
+		else
+			push!( header[line], b[1] )
+		end
+		if line > 10
+			break
+		end
+	end
+	lines = String.( header ); 
+	( lines[2][1:4] !== "VTJK" ) && (error("The vtk vector field was not stored with VTJK, and cannot open it safely." ))
+
+	# Extracting dimensions of the vector field from the header
+	h, w, d     = parse.( Int64, split( lines[5], " " )[end-3:end-1] ); # TODO: deal with extra space at the end of lines[5] for volumes
+	_, _, dtype = split( lines[9], " " );
+	data_type   = VTJK.get( VTJK.VTK2Julia, dtype, Bool );
+
+	vol = Array{data_type, 3}(undef, h, w, d);
+
+	# Reading the remaining of the IOStream, which corresponds to the elements of the vectorfield
+	for z in 1:d, x in 1:w, y in 1:h
+		voxel = data_type(ntoh(read( f, data_type )))
+		vol[y, x, z] = voxel
+	end
+
+	return vol
+end
