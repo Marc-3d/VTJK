@@ -28,7 +28,7 @@ function volume2VTK( volume::Array{T,3};
 	SCALARS intensities $data_type
 	LOOKUP_TABLE default"""
 
-	io_buff = IOBuffer( maxsize=length(volume)*T.size + length(header) + 1 ); 
+	io_buff = IOBuffer( maxsize=length(volume)*sizeof(T) + length(header) + 1 ); 
 
 	println( io_buff, header ); 
 	for e in volume

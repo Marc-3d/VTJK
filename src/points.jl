@@ -97,8 +97,8 @@ function pointsNorm2VTK( inp, norms; fn="tmp.vtk", path=pwd(), mode="w" )
 		println( io, "POINT_DATA $(length(norms))"  )
         println( io, "VECTORS directions $(data_type2)"  )
 
-		for n in norms
-    		println( io, string( n[1], " ", n[2], " ", n[3] ) )
+		for p in 1:num_points
+    		println( io, string( norms[p][1], " ", norms[p][2], " ", norms[p][3] ) )
         end
     close(io)
 

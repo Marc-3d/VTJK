@@ -142,7 +142,7 @@ function vectorfield2VTK_bin( U::Array{T,2}, V::Array{T,2};
 	VECTORS directions $data_type"""
 
 
-	io_buff = IOBuffer( maxsize=length(U)*T.size*3 + length(header) + 1 ); 
+	io_buff = IOBuffer( maxsize=length(U)*sizeof(T)*3 + length(header) + 1 ); 
 
 	println( io_buff, header ); 
 	for idx in 1:length(U)
